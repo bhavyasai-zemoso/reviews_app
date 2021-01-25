@@ -1,4 +1,4 @@
-  class Api::V1::AuthorsController < ApplicationController
+  class AuthorsController < ApplicationController
     skip_before_action :verify_authenticity_token
     before_action :set_author, only: [:show, :update, :destroy]
 
@@ -14,7 +14,7 @@
   def create
    @author = Author.new(author_params)
    if @author.save
-    render json: @author, status: :created, location: api_v1_author_url(@author)
+    render json: @author, status: :created, location: author_url(@author)
    else
     render json: @author.errors, status: :unprocessable_entity
    end
