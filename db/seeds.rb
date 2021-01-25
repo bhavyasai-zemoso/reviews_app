@@ -7,4 +7,4 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 #Author.create(name: 'Harry', email:'harry.potter@hogwarts.com', country:'England')
 #Author.create(name: 'Snape', email:'snape.severus@hogwarts.com', country:'England')
-Movie.create(title: 'Shutter Island', director:'Martin Scorsese', rating:'8.2')
+Movie.create(title: 'Shutter Island', director:'Martin Scorsese', rating:8)

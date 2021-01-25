@@ -2,10 +2,10 @@
 
 one:
   title: MyString
-  director: MyString
+  author: MyString
   rating: 1
 
 two:
   title: MyString
-  director: MyString
+  author: MyString
   rating: 1
