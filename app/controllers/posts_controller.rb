@@ -4,8 +4,14 @@ class PostsController < ApplicationController
 
   
   def index
-   @posts = Post.all
-   render json: @posts
+    if (params[:user_id])
+        @user = User.find(params[:user_id])
+        @post = @user.posts
+        render json: @post, status: :created, location: post_url(@post) 
+    else
+        #render json:Post.all,include: [:user]
+        render json:Post.all
+    end
   end
 
   def show
@@ -13,21 +19,27 @@ class PostsController < ApplicationController
   end
   
   def create
-   @post = Post.new(post_params)
-   if @post.save
-    render json: @post, status: :created, location: post_url(@post)
-   else
-    render json: @post.errors, status: :unprocessable_entity
-   end
+    if (params[:user_id])
+        @user = User.find(params[:user_id])
+        @post = @user.posts.create(params[:post].permit(:title))
+        render json: @post 
+    else
+        render json:{error:"cannot create post without user id"},status:404
+    end
   end
 
  
   def update
-   if @post.update(post_params)
-    render json: @post
-   else
-    render json: @post.errors, status: :unprocessable_entity
-   end
+    if (params[:user_id])
+        @user = User.find(params[:user_id])
+        @post = @user.posts.find(params[:id])
+        if @post.update(title:params[:title])
+            @post.update(title: params[:title])
+            render json: @post
+        end
+    else
+        render json:{error:"cannot update post without user id"},status:404
+    end
   end
 
   def edit
@@ -35,8 +47,13 @@ class PostsController < ApplicationController
   end
 
   def destroy
-      @post = Post.find(params[:id])
-      @post.destroy
+     if (params[:user_id])
+        @user = User.find(params[:user_id])
+        @post = @user.posts.find(params[:id])
+        @post.destroy
+    else
+        render json:{error:"cannot delete post without user id"},status:404
+    end
   end
 
   private
@@ -46,6 +63,7 @@ class PostsController < ApplicationController
 
 
   def post_params
+      params.require(:user)  
       params.require(:post).permit(:title)
   end
 
