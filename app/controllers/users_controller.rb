@@ -37,7 +37,11 @@ def index
 
   def destroy
       @user = User.find(params[:id])
-      @user.destroy
+      if @user.destroy
+        head:ok
+     else
+        render json: @user.errors
+    end
   end
 
   private

@@ -29,7 +29,12 @@ class MoviesController < ApplicationController
   end
 
   def destroy
-   @movie.destroy
+    @book = Book.find(params[:id])
+    if @movie.destroy
+        head:ok
+    else
+        render json: @movie.errors
+    end
   end
 
   private

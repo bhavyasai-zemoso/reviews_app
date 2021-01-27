@@ -29,7 +29,12 @@ class BooksController < ApplicationController
   end
 
   def destroy
-   @book.destroy
+    @book = Book.find(params[:id])
+   if @book.destroy
+        head:ok
+     else
+        render json: @book.errors
+    end
   end
 
   private
