@@ -19,33 +19,32 @@ class PostsController < ApplicationController
   def show
    render json: @post
   end
-  
   def create
-    if (params[:user_id] && params[:movie_id])
-        @user = User.find(params[:user_id]) rescue nil
-        @movie = Movie.find(params[:movie_id]) rescue nil
-        @post = Post.new
-        @post.title = params[:title]
-        @post.user = @user
-        @post.movie = @movie
+      @main_post  = main_post
+      if(@main_post && params[:user_id])
+        @post = @main_post.posts.new post_params
         if @post.save
-            render json: @post, status: :created, location: post_url(@post)
+           render json: @post, status: :created, location: post_url(@post)
         else
-            render json: @post.errors, status: :unprocessable_entity
+           render json: @post.errors
         end
-    else
-        render json:{error:"cannot create post without user id or movie id"},status:404   
-    end
-  end
+      else
+       render json:{error:"cannot create post without user id and movie/book id"},status:404   
+      end
+   end
 
- 
+   private
+   def main_post
+      return Movie.find params[:movie_id] if params[:movie_id]
+      Book.find params[:book_id] if params[:book_id]
+   end
+
   def update
-    if (params[:user_id] && params[:movie_id])
-        @user = User.find(params[:user_id]) rescue nil
-        @movie = Movie.find(params[:movie_id]) rescue nil
-        @post = @post=Post.where(id: params[:id],user_id: params[:user_id], movie_id: params[:movie_id])
-        if @post.update(title:params[:title])
-            @post.update(title: params[:title])
+        @main_post  = main_post
+      if(@main_post && params[:user_id])
+        @post = @main_post.post
+        if @post.update(content:params[:content])
+            @post.update(content: params[:content])
             render json: @post
         end
     else
@@ -71,10 +70,8 @@ class PostsController < ApplicationController
    @post = Post.find(params[:id])
   end
 
-
   def post_params
-      params.require(:user)  
-      params.require(:post).permit(:title)
-  end
+      params.require(:post).permit(:content).merge(user_id: params[:user_id])
+   end
 
 end
