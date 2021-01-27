@@ -19,12 +19,18 @@ class PostsController < ApplicationController
   end
   
   def create
-    if (params[:user_id])
-        @user = User.find(params[:user_id])
-        @post = @user.posts.create(params[:post].permit(:title))
-        render json: @post 
+    if (params[:user_id] && params[:movie_id])
+        @post = Post.new
+        @post.title = params[:title]
+        @post.user_id = params[:user_id]
+        @post.movie_id = params[:movie_id]
+        if @post.save
+            render json: @post, status: :created, location: post_url(@post)
+        else
+            render json: @post.errors, status: :unprocessable_entity
+        end
     else
-        render json:{error:"cannot create post without user id"},status:404
+        render json:{error:"cannot create post without user id or movie id"},status:404   
     end
   end
 
