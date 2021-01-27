@@ -1,5 +1,3 @@
 class Post < ApplicationRecord
-     belongs_to :user
-     belongs_to :movie
-     validates :title, presence: true
+  belongs_to :postable, polymorphic: true
 end
