@@ -4,9 +4,11 @@ class PostsController < ApplicationController
 
   
   def index
-    if (params[:user_id])
-        @user = User.find(params[:user_id])
-        @post = @user.posts
+    if (params[:user_id] && params[:movie_id])
+        @post=Post.where(user_id: params[:user_id], movie_id: params[:movie_id]).all
+        render json: @post, status: :created, location: post_url(@post) 
+    elsif (params[:user_id])
+        @post=Post.where(user_id: params[:user_id]).all
         render json: @post, status: :created, location: post_url(@post) 
     else
         #render json:Post.all,include: [:user]
@@ -20,10 +22,12 @@ class PostsController < ApplicationController
   
   def create
     if (params[:user_id] && params[:movie_id])
+        @user = User.find(params[:user_id]) rescue nil
+        @movie = Movie.find(params[:movie_id]) rescue nil
         @post = Post.new
         @post.title = params[:title]
-        @post.user_id = params[:user_id]
-        @post.movie_id = params[:movie_id]
+        @post.user = @user
+        @post.movie = @movie
         if @post.save
             render json: @post, status: :created, location: post_url(@post)
         else
@@ -36,15 +40,16 @@ class PostsController < ApplicationController
 
  
   def update
-    if (params[:user_id])
-        @user = User.find(params[:user_id])
-        @post = @user.posts.find(params[:id])
+    if (params[:user_id] && params[:movie_id])
+        @user = User.find(params[:user_id]) rescue nil
+        @movie = Movie.find(params[:movie_id]) rescue nil
+        @post = @post=Post.where(id: params[:id],user_id: params[:user_id], movie_id: params[:movie_id])
         if @post.update(title:params[:title])
             @post.update(title: params[:title])
             render json: @post
         end
     else
-        render json:{error:"cannot update post without user id"},status:404
+        render json:{error:"cannot update post without user id or movie id"},status:404
     end
   end
 
@@ -53,12 +58,11 @@ class PostsController < ApplicationController
   end
 
   def destroy
-     if (params[:user_id])
-        @user = User.find(params[:user_id])
-        @post = @user.posts.find(params[:id])
-        @post.destroy
-    else
-        render json:{error:"cannot delete post without user id"},status:404
+    @post = Post.find(params[:id])
+     if @post.destroy
+        head:ok
+     else
+        render json: @post.errors
     end
   end
 
