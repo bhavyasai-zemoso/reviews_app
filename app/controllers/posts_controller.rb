@@ -4,14 +4,14 @@ class PostsController < ApplicationController
 
   
   def index
-    if (params[:user_id] && params[:movie_id])
-        @post=Post.where(user_id: params[:user_id], movie_id: params[:movie_id]).all
-        render json: @post, status: :created, location: post_url(@post) 
-    elsif (params[:user_id])
+    parent_post  = main_post
+      if(parent_post && params[:user_id])
+        @post=Post.where(user_id: params[:user_id], postable_id: parent_post.id).all
+        render json: @post 
+      elsif (params[:user_id])
         @post=Post.where(user_id: params[:user_id]).all
-        render json: @post, status: :created, location: post_url(@post) 
+        render json: @post
     else
-        #render json:Post.all,include: [:user]
         render json:Post.all
     end
   end
@@ -19,6 +19,7 @@ class PostsController < ApplicationController
   def show
    render json: @post
   end
+
   def create
       @main_post  = main_post
       if(@main_post && params[:user_id])
@@ -33,22 +34,13 @@ class PostsController < ApplicationController
       end
    end
 
-   private
-   def main_post
-      return Movie.find params[:movie_id] if params[:movie_id]
-      Book.find params[:book_id] if params[:book_id]
-   end
+  
 
   def update
-        @main_post  = main_post
-      if(@main_post && params[:user_id])
-        @post = @main_post.post
-        if @post.update(content:params[:content])
-            @post.update(content: params[:content])
-            render json: @post
-        end
-    else
-        render json:{error:"cannot update post without user id or movie id"},status:404
+    if @post.update(content:params[:content])
+        render json: @post
+    else 
+        render json: @post.errors
     end
   end
 
@@ -69,6 +61,12 @@ class PostsController < ApplicationController
   def set_post
    @post = Post.find(params[:id])
   end
+
+   private
+   def main_post
+      return Movie.find params[:movie_id] if params[:movie_id]
+      Book.find params[:book_id] if params[:book_id]
+   end
 
   def post_params
       params.require(:post).permit(:content).merge(user_id: params[:user_id])
