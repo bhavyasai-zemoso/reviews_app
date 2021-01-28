@@ -7,12 +7,12 @@ class PostsController < ApplicationController
     parent_post  = main_post
       if(parent_post && params[:user_id])
         @post=Post.where(user_id: params[:user_id], postable_id: parent_post.id).all
-        render json: @post 
+        render json: @post,include:[:comments]
       elsif (params[:user_id])
         @post=Post.where(user_id: params[:user_id]).all
-        render json: @post
+        render json: @post,include:[:comments]
     else
-        render json:Post.all
+        render json:Post.all,include:[:comments]
     end
   end
 
