@@ -9,8 +9,8 @@ Rails.application.routes.draw do
       resources :posts
     end
   end
-  resources :users do
-  	resources :posts
+  resources :users, shallow: true do
+  	resources :posts, only: [:index, :show]
   end
   resources :posts
 end
