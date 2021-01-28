@@ -38,7 +38,7 @@ class CommentsController < ApplicationController
 
   private
   def set_comment
-   @comment = Comment.find(params[:id])
+   @comment = Comment.find(params[:id]) rescue nil
   end
 
   def comment_params

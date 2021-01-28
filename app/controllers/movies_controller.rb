@@ -29,8 +29,8 @@ class MoviesController < ApplicationController
   end
 
   def destroy
-    @book = Book.find(params[:id])
-    if @book.destroy
+    @movie = Movie.find(params[:id])
+    if @movie.destroy
         head:ok
     else
         render json: @movie.errors
@@ -39,7 +39,7 @@ class MoviesController < ApplicationController
 
   private
   def set_movie
-   @movie = Movie.find(params[:id])
+   @movie = Movie.find(params[:id]) rescue nil
   end
 
   def movie_params
