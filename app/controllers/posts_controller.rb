@@ -13,7 +13,7 @@ class PostsController < ApplicationController
       @user = User.find(params[:id])
       @movie = Movie.find(params[:movie_id])
       post = Post.where(postable:@movie, user:@user).first
-      render json:post, include: [:user, :comments]
+      render json:post, include: [:user, :comments, :postable]
     else
       raise Exception.new "Post does not exist for this user and movie"
     end
@@ -24,7 +24,7 @@ class PostsController < ApplicationController
       @user = User.find(params[:id])
       @book = Book.find(params[:book_id])
       post = Post.where(postable:@book, user:@user).first
-      render json:post, include: [:user, :comments]
+      render json:post, include: [:user, :comments, :postable]
     else
       raise Exception.new "Post does not exist for this user and book"
     end
