@@ -4,15 +4,39 @@ class PostsController < ApplicationController
 
   
   def index
-    parent_post  = main_post
-      if(parent_post && params[:user_id])
-        @post=Post.where(user_id: params[:user_id], postable_id: parent_post.id).all
-        render json: @post,include:[:comments]
-      elsif (params[:user_id])
-        @post=Post.where(user_id: params[:user_id]).all
-        render json: @post,include:[:comments]
+   @posts = Post.all
+   render json: @posts,include:[:comments ,:user]
+  end
+
+  def movie_post
+    if (params[:id] && params[:movie_id])
+      @user = User.find(params[:id])
+      @movie = Movie.find(params[:movie_id])
+      post = Post.where(postable:@movie, user:@user).first
+      render json:post, include: [:user, :comments]
     else
-        render json:Post.all,include:[:comments]
+      raise Exception.new "Post does not exist for this user and movie"
+    end
+  end
+
+  def book_post
+    if (params[:id] && params[:book_id])
+      @user = User.find(params[:id])
+      @book = Book.find(params[:book_id])
+      post = Post.where(postable:@book, user:@user).first
+      render json:post, include: [:user, :comments]
+    else
+      raise Exception.new "Post does not exist for this user and book"
+    end
+  end
+
+  def user_post
+    if (params[:id])
+      @user = User.find(params[:id])
+      @post = Post.where(user:@user)
+      render json:@post, include: [:user, :comments]
+    else
+      raise Exception.new "Post does not exist for this user"
     end
   end
 
