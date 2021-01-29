@@ -2,10 +2,8 @@
 
 one:
   content: MyString
-  postable: one
-  postable_type: Postable
+  user: one
 
 two:
   content: MyString
-  postable: two
-  postable_type: Postable
+  user: two
